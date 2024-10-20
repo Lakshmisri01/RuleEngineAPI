@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule Engine API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .container {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        textarea, input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <h1>Rule Engine API Interface</h1>
+
+    <!-- Create Rule -->
+    <div class="container">
+        <h2>Create Rule</h2>
+        <label for="create-rule">Enter Rule String:</label>
+        <textarea id="create-rule" rows="3" placeholder="Enter rule here..."></textarea>
+        <button onclick="createRule()">Create Rule</button>
+        <div class="result" id="create-rule-result"></div>
+    </div>
+
+    <!-- Combine Rules -->
+    <div class="container">
+        <h2>Combine Rules</h2>
+        <label for="combine-rules">Enter Rules (comma-separated):</label>
+        <textarea id="combine-rules" rows="3" placeholder="Enter rules here..."></textarea>
+        <button onclick="combineRules()">Combine Rules</button>
+        <div class="result" id="combine-rules-result"></div>
+    </div>
+
+    <!-- Evaluate Rule -->
+    <div class="container">
+        <h2>Evaluate Rule</h2>
+        <label for="evaluate-ast">Enter AST (JSON format):</label>
+        <textarea id="evaluate-ast" rows="3" placeholder="Enter AST here..."></textarea>
+        <label for="evaluate-data">Enter Data (JSON format):</label>
+        <textarea id="evaluate-data" rows="3" placeholder="Enter data here..."></textarea>
+        <button onclick="evaluateRule()">Evaluate Rule</button>
+        <div class="result" id="evaluate-rule-result"></div>
+    </div>
+
+    <script>
+        // Function to create a rule
+        function createRule() {
+            const rule = document.getElementById('create-rule').value;
+            fetch('/create_rule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rule: rule })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('create-rule-result').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('create-rule-result').innerHTML = 'Error: ' + error;
+            });
+        }
+
+        // Function to combine rules
+        function combineRules() {
+            const rules = document.getElementById('combine-rules').value.split(',');
+            fetch('/combine_rules', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ rules: rules })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('combine-rules-result').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('combine-rules-result').innerHTML = 'Error: ' + error;
+            });
+        }
+
+        // Function to evaluate a rule
+        function evaluateRule() {
+            const ast = document.getElementById('evaluate-ast').value;
+            const data = document.getElementById('evaluate-data').value;
+            fetch('/evaluate_rule', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ast: JSON.parse(ast), data: JSON.parse(data) })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('evaluate-rule-result').innerHTML = JSON.stringify(data, null, 2);
+            })
+            .catch(error => {
+                document.getElementById('evaluate-rule-result').innerHTML = 'Error: ' + error;
+            });
+        }
+    </script>
+</body>
+</html>
